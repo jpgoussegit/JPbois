@@ -38,6 +38,7 @@ header {
   padding: 24px 24px 20px;
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 header::after {
   content: '';
@@ -59,6 +60,7 @@ h1 span { color: var(--accent); }
   border-bottom: 1px solid #333;
   padding: 0 16px;
   gap: 4px;
+  justify-content: center;
 }
 .tab {
   padding: 10px 16px;
@@ -404,12 +406,8 @@ tr:hover td { background: var(--bg); }
 
 <header>
   <div class="brand">Créé par JP avec Claude AI</div>
-  <div class="header-top">
-    <div>
-      <h1>LISTE DE <span>DÉBIT</span></h1>
-      <div class="header-sub">DIMENSIONS FINIES → BRUTES</div>
-    </div>
-  </div>
+  <h1>LISTE DE <span>DÉBIT</span></h1>
+  <div class="header-sub">DIMENSIONS FINIES → BRUTES</div>
 </header>
 
 <div class="tabs">
