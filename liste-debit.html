@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Liste de Débit Brut</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --bg2: #ede7d9;
+  --surface: #fff;
+  --dark: #1c1a16;
+  --wood: #8B5E3C;
+  --wood-light: #c4895a;
+  --panel-color: #4a7c6b;
+  --accent: #d4a853;
+  --text: #2c2820;
+  --muted: #8a7f72;
+  --border: #d9d0c0;
+  --danger: #c0392b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4895a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--dark);
+  color: #f5f0e8;
+  padding: 24px 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--wood), var(--accent), var(--wood-light));
+}
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.brand { font-size: 10px; letter-spacing: 3px; color: var(--accent); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; line-height: 1; }
+h1 span { color: var(--accent); }
+.header-sub { font-size: 11px; color: #a09880; margin-top: 4px; letter-spacing: 1px; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--dark);
+  border-bottom: 1px solid #333;
+  padding: 0 16px;
+  gap: 4px;
+}
+.tab {
+  padding: 10px 16px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-family: 'DM Mono', monospace;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  background: none;
+  border-top: none; border-left: none; border-right: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── MAIN ── */
+main { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+
+/* ── PROJECT CARD ── */
+.project-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.project-grid .full { grid-column: 1 / -1; }
+
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-group label { font-size: 11px; color: var(--muted); letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+.field-group input, .field-group textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.field-group textarea { resize: none; height: 60px; }
+.field-group input:focus, .field-group textarea:focus { border-color: var(--wood); }
+
+/* ── SURÉPAISSEUR TOGGLE ── */
+.surep-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.surep-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.surep-btn.wood.active { background: #fff4e6; border-color: var(--wood); color: var(--wood); }
+.surep-btn.mat-panel.active { background: #e8f4f0; border-color: var(--panel-color); color: var(--panel-color); }
+.surep-info {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  padding: 8px 12px;
+  background: var(--bg2);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: none;
+}
+.surep-info.show { display: block; }
+
+/* ── ADD ROW FORM ── */
+.add-form {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 80px 80px 80px 110px;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+.form-row .field-group label { font-size: 10px; }
+.form-row input, .form-row select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.form-row input:focus, .form-row select:focus { border-color: var(--wood); }
+
+.btn-add {
+  background: var(--dark);
+  color: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+}
+.btn-add:hover { background: var(--wood); color: #fff; }
+
+/* ── TABLE ── */
+.table-wrap {
+  background: var(--surface);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+.table-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.table-header-bar .th-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+}
+.count-badge {
+  background: var(--dark);
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+.sort-btns { display: flex; gap: 6px; }
+.sort-btn {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sort-btn.active { border-color: var(--wood); color: var(--wood); background: #fff4e6; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: var(--bg2); }
+th {
+  padding: 10px 12px;
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+th.right { text-align: right; }
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--bg2);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+
+.td-qty {
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  color: var(--wood);
+  font-size: 15px;
+  text-align: center;
+}
+.td-name { font-weight: 600; color: var(--dark); }
+.td-type {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.td-type.massif { background: #fff4e6; color: var(--wood); }
+.td-type.panneau { background: #e8f4f0; color: var(--panel-color); }
+.td-fini { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; }
+.td-brut { color: var(--dark); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; text-align: right; }
+.td-brut .surep { color: var(--accent); font-size: 10px; }
+.td-del {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--border);
+  font-size: 16px;
+  padding: 4px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.td-del:hover { color: var(--danger); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+.empty-state p { font-size: 14px; }
+
+/* ── ACTION BAR ── */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.btn-action {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-action:hover { border-color: var(--wood); color: var(--wood); }
+.btn-action.primary { background: var(--dark); color: var(--accent); border-color: var(--dark); }
+.btn-action.primary:hover { background: var(--wood); }
+
+/* ── SETTINGS TAB ── */
+.settings-section { margin-bottom: 20px; }
+.settings-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.settings-card h3 {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.settings-grid .field-group label { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.settings-grid input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  color: var(--text);
+  width: 100%;
+  outline: none;
+}
+.settings-grid input:focus { border-color: var(--wood); }
+.color-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.color-dot.wood { background: var(--wood); }
+.color-dot.panel { background: var(--panel-color); }
+
+/* ── PRINT ── */
+@media print {
+  body { background: white; }
+  .tabs, .add-form, .action-bar, .surep-bar, .surep-info, .td-del, header .header-top button { display: none !important; }
+  .table-wrap { box-shadow: none; border: 1px solid #ccc; }
+  .project-card { box-shadow: none; }
+  main { padding: 10px; }
+  .print-header { display: block !important; }
+}
+.print-header { display: none; }
+
+/* ── PANEL SWITCH ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* mobile */
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 50px 1fr; }
+  .form-row .field-group:nth-child(n+3) { grid-column: auto; }
+  .form-row { grid-template-columns: 1fr 1fr; }
+  table { font-size: 11px; }
+  th, td { padding: 8px 6px; }
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="brand">Créé par JP avec Claude AI</div>
+  <div class="header-top">
+    <div>
+      <h1>LISTE DE <span>DÉBIT</span></h1>
+      <div class="header-sub">DIMENSIONS FINIES → BRUTES</div>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('saisie')">✏️ SAISIE</button>
+  <button class="tab" onclick="switchTab('liste')">📋 LISTE BRUTE</button>
+  <button class="tab" onclick="switchTab('reglages')">⚙️ RÉGLAGES</button>
+</div>
+
+<main>
+
+<!-- ═══ SAISIE ═══ -->
+<div class="panel active" id="panel-saisie">
+
+  <!-- Projet -->
+  <div class="project-card">
+    <div class="card-title">Informations du projet</div>
+    <div class="project-grid">
+      <div class="field-group">
+        <label>Nom du projet</label>
+        <input type="text" id="projNom" placeholder="ex: Armoire chambre" oninput="updateProject()">
+      </div>
+      <div class="field-group">
+        <label>Date</label>
+        <input type="date" id="projDate" oninput="updateProject()">
+      </div>
+      <div class="field-group full">
+        <label>Description</label>
+        <textarea id="projDesc" placeholder="Notes, client, détails..." oninput="updateProject()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ajouter pièce -->
+  <div class="add-form">
+    <div class="card-title">Ajouter une pièce</div>
+
+    <div class="surep-bar">
+      <button class="surep-btn wood active" id="btnMassif" onclick="setType('massif')">
+        <span>🪵</span> Massif
+      </button>
+      <button class="surep-btn mat-panel" id="btnPanneau" onclick="setType('panneau')">
+        <span>🟩</span> Panneau
+      </button>
+    </div>
+    <div class="surep-info show" id="surepInfo"></div>
+
+    <div class="form-row">
+      <div class="field-group">
+        <label>Qté</label>
+        <input type="number" id="fQty" min="1" value="1" placeholder="1">
+      </div>
+      <div class="field-group">
+        <label>Désignation</label>
+        <input type="text" id="fName" placeholder="ex: Côté gauche">
+      </div>
+      <div class="field-group">
+        <label id="lblLong">Long. (po)</label>
+        <input type="text" id="fLong" placeholder="ex: 24 ou 3/4">
+      </div>
+      <div class="field-group">
+        <label id="lblLarg">Larg. (po)</label>
+        <input type="text" id="fLarg" placeholder="ex: 6 1/2">
+      </div>
+      <div class="field-group">
+        <label id="lblEp">Ép. (po)</label>
+        <input type="text" id="fEp" placeholder="ex: 3/4">
+      </div>
+      <div class="field-group">
+        <label>&nbsp;</label>
+        <button class="btn-add" onclick="addPiece()">+ AJOUTER</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ LISTE BRUTE ═══ -->
+<div class="panel" id="panel-liste">
+
+  <div class="table-wrap">
+    <div class="table-header-bar">
+      <span class="th-title">Liste de débit brut</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="sort-btns">
+          <button class="sort-btn active" id="sortNone" onclick="setSortBy('none')">ORDRE</button>
+          <button class="sort-btn" id="sortEp" onclick="setSortBy('ep')">ÉP.</button>
+          <button class="sort-btn" id="sortType" onclick="setSortBy('type')">TYPE</button>
+        </div>
+        <span class="count-badge" id="countBadge">0 pcs</span>
+      </div>
+    </div>
+
+    <div id="tableContainer">
+      <div class="empty-state">
+        <div class="icon">🪵</div>
+        <p>Aucune pièce ajoutée.<br>Allez dans l'onglet Saisie pour commencer.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn-action primary" onclick="generatePDF()">📄 GÉNÉRER PDF</button>
+    <button class="btn-action" onclick="exportCSV()">📥 EXPORT CSV</button>
+    <button class="btn-action" onclick="clearAll()" style="color:#c0392b">🗑️ TOUT EFFACER</button>
+  </div>
+
+</div>
+
+<!-- ═══ RÉGLAGES ═══ -->
+<div class="panel" id="panel-reglages">
+
+  <div class="settings-card">
+    <h3><span class="color-dot wood"></span>Surépaisseur — Bois Massif</h3>
+    <div class="settings-grid">
+      <div class="field-group">
+        <label>+ Longueur (mm)</label>
+        <input type="number" id="sML" value="25.4" step="0.1">
+      </div>
+      <div class="field-group">
+        <label>+ Largeur (mm)</label>
+        <input type="number" id="sMLa" value="6.35" step="0.1">
+      </div>
+      <div class="field-group">
+        <label>+ Épaisseur (mm)</label>
+        <input type="number" id="sMEp" value="6.35" step="0.1">
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;font-family:'DM Mono',monospace;">
+      1 pouce = 25.4 mm · 1/4 pouce = 6.35 mm
+    </p>
+  </div>
+
+  <div class="settings-card">
+    <h3><span class="color-dot panel"></span>Surépaisseur — Panneaux</h3>
+    <div class="settings-grid">
+      <div class="field-group">
+        <label>+ Longueur (mm)</label>
+        <input type="number" id="sPL" value="6.35" step="0.1">
+      </div>
+      <div class="field-group">
+        <label>+ Largeur (mm)</label>
+        <input type="number" id="sPLa" value="6.35" step="0.1">
+      </div>
+      <div class="field-group">
+        <label>+ Épaisseur (mm)</label>
+        <input type="number" id="sPEp" value="6.35" step="0.1">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-action primary" style="width:100%" onclick="saveSettings()">✓ ENREGISTRER LES RÉGLAGES</button>
+  <div id="saveMsg" style="text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--panel-color);margin-top:10px;display:none;">Réglages sauvegardés ✓</div>
+</div>
+
+</main>
+
+<!-- PRINT TEMPLATE -->
+<div class="print-header" id="printHeader" style="padding:20px;margin-bottom:20px;border-bottom:2px solid #333;">
+</div>
+
+<script>
+// ── STATE ──
+let pieces = JSON.parse(localStorage.getItem('debit_pieces') || '[]');
+let project = JSON.parse(localStorage.getItem('debit_project') || '{}');
+let currentType = 'massif';
+let sortBy = 'none';
+
+const defaultSettings = {
+  massif:  { l: 25.4, la: 6.35, ep: 6.35 },
+  panneau: { l: 6.35, la: 6.35, ep: 6.35 }
+};
+let savedSettings = JSON.parse(localStorage.getItem("debit_settings") || "{}");
+let settings = {
+  massif:  { ...defaultSettings.massif,  ...(savedSettings.massif  || {}) },
+  panneau: { ...defaultSettings.panneau, ...(savedSettings.panneau || {}) }
+};
+["massif","panneau"].forEach(t => {
+  ["l","la","ep"].forEach(k => {
+    if (settings[t][k] == null || isNaN(settings[t][k])) settings[t][k] = defaultSettings[t][k];
+  });
+});
+
+// ── INIT ──
+window.onload = () => {
+  // Set today's date if empty
+  if (!project.date) {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('projDate').value = today;
+  } else {
+    document.getElementById('projDate').value = project.date || '';
+  }
+  document.getElementById('projNom').value = project.nom || '';
+  document.getElementById('projDesc').value = project.desc || '';
+
+  // Settings fields
+  document.getElementById('sML').value = settings.massif.l;
+  document.getElementById('sMLa').value = settings.massif.la;
+  document.getElementById('sMEp').value = settings.massif.ep;
+  document.getElementById('sPL').value = settings.panneau.l;
+  document.getElementById('sPLa').value = settings.panneau.la;
+  document.getElementById('sPEp').value = settings.panneau.ep;
+
+  updateSurepInfo();
+  renderTable();
+};
+
+// ── PROJECT ──
+function updateProject() {
+  project.nom = document.getElementById('projNom').value;
+  project.date = document.getElementById('projDate').value;
+  project.desc = document.getElementById('projDesc').value;
+  localStorage.setItem('debit_project', JSON.stringify(project));
+}
+
+// ── TYPE TOGGLE ──
+function setType(t) {
+  currentType = t;
+  document.getElementById('btnMassif').classList.toggle('active', t === 'massif');
+  document.getElementById('btnPanneau').classList.toggle('active', t === 'panneau');
+  // Update labels and placeholders
+  if (t === 'massif') {
+    document.getElementById('lblLong').textContent = 'Long. (po)';
+    document.getElementById('lblLarg').textContent = 'Larg. (po)';
+    document.getElementById('lblEp').textContent = 'Ép. (po)';
+    document.getElementById('fLong').placeholder = 'ex: 24 ou 1 1/2';
+    document.getElementById('fLarg').placeholder = 'ex: 6 1/2';
+    document.getElementById('fEp').placeholder = 'ex: 3/4';
+  } else {
+    document.getElementById('lblLong').textContent = 'Long. (mm)';
+    document.getElementById('lblLarg').textContent = 'Larg. (mm)';
+    document.getElementById('lblEp').textContent = 'Ép. (mm)';
+    document.getElementById('fLong').placeholder = 'ex: 800';
+    document.getElementById('fLarg').placeholder = 'ex: 300';
+    document.getElementById('fEp').placeholder = 'ex: 18';
+  }
+  updateSurepInfo();
+}
+
+function updateSurepInfo() {
+  const s = settings[currentType];
+  const el = document.getElementById('surepInfo');
+  const label = currentType === 'massif' ? '🪵 Massif' : '🟩 Panneau';
+  if (currentType === 'massif') {
+    el.innerHTML = `<b>${label}</b> — Surépaisseur : <b>+${formatInches(s.l / 25.4)}</b> long. · <b>+${formatInches(s.la / 25.4)}</b> larg. · <b>+${formatInches(s.ep / 25.4)}</b> ép.`;
+  } else {
+    el.innerHTML = `<b>${label}</b> — Surépaisseur : <b>+${s.l} mm</b> long. · <b>+${s.la} mm</b> larg. · <b>+${s.ep} mm</b> ép.`;
+  }
+  el.classList.add('show');
+}
+
+// ── FRACTION PARSER ──
+// Accepts: "3/4", "1 1/2", "24", "0.75"
+function parseDim(val) {
+  val = val.trim();
+  if (!val) return NaN;
+  // Decimal
+  if (/^[\d.]+$/.test(val)) return parseFloat(val);
+  // Pure fraction: 3/4
+  if (/^\d+\/\d+$/.test(val)) {
+    const [n, d] = val.split('/');
+    return parseInt(n) / parseInt(d);
+  }
+  // Mixed: 1 1/2 or 1-1/2
+  const mixed = val.match(/^(\d+)[\s\-]+(\d+)\/(\d+)$/);
+  if (mixed) return parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3]);
+  return NaN;
+}
+
+// Format inches value back to fraction string for display
+// Format pour affichage précis (dimensions finies saisies)
+function formatInches(val, maxDen = 64) {
+  if (isNaN(val)) return '?';
+  const whole = Math.floor(val);
+  const frac = val - whole;
+  const num = Math.round(frac * maxDen);
+  if (num === 0) return whole + '"';
+  if (num === maxDen) return (whole + 1) + '"';
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  const g = gcd(num, maxDen);
+  const sNum = num / g, sDen = maxDen / g;
+  return whole > 0 ? `${whole} ${sNum}/${sDen}"` : `${sNum}/${sDen}"`;
+}
+
+// Format pour les dimensions BRUTES — résultat exact en fraction simplifiée
+function formatInchesBrut(val) {
+  if (isNaN(val)) return '?';
+  const whole = Math.floor(val);
+  const frac = val - whole;
+  if (frac < 0.001) return whole + '"';
+  // Trouve la fraction exacte sur base 16
+  const den = 16;
+  const num = Math.round(frac * den);
+  if (num === 0) return whole + '"';
+  if (num === den) return (whole + 1) + '"';
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  const g = gcd(num, den);
+  const sNum = num / g, sDen = den / g;
+  return whole > 0 ? `${whole} ${sNum}/${sDen}"` : `${sNum}/${sDen}"`;
+}
+
+// ── ADD PIECE ──
+function addPiece() {
+  const qty = parseInt(document.getElementById('fQty').value) || 1;
+  const name = document.getElementById('fName').value.trim();
+  const rawLong = document.getElementById('fLong').value;
+  const rawLarg = document.getElementById('fLarg').value;
+  const rawEp   = document.getElementById('fEp').value;
+
+  if (!name) { alert('Veuillez entrer une désignation.'); return; }
+
+  let long, larg, ep;
+  if (currentType === 'massif') {
+    long = parseDim(rawLong);
+    larg = parseDim(rawLarg);
+    ep   = parseDim(rawEp);
+    if (isNaN(long) || isNaN(larg) || isNaN(ep)) {
+      alert('Dimensions invalides.\nExemples valides: 3/4  •  1 1/2  •  24'); return;
+    }
+  } else {
+    long = parseFloat(rawLong);
+    larg = parseFloat(rawLarg);
+    ep   = parseFloat(rawEp);
+    if (!long || !larg || !ep) { alert('Veuillez entrer toutes les dimensions (en mm).'); return; }
+  }
+
+  const s = settings[currentType];
+  pieces.push({
+    id: Date.now(),
+    qty, name, long, larg, ep,
+    type: currentType,
+    unit: currentType === 'massif' ? 'po' : 'mm'
+  });
+
+  localStorage.setItem('debit_pieces', JSON.stringify(pieces));
+  renderTable();
+
+  document.getElementById('fName').value = '';
+  document.getElementById('fLong').value = '';
+  document.getElementById('fLarg').value = '';
+  document.getElementById('fEp').value = '';
+  document.getElementById('fQty').value = '1';
+  document.getElementById('fName').focus();
+}
+
+// ── SORT ──
+function setSortBy(s) {
+  sortBy = s;
+  ['sortNone','sortEp','sortType'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById(s === 'none' ? 'sortNone' : s === 'ep' ? 'sortEp' : 'sortType').classList.add('active');
+  renderTable();
+}
+
+// ── RENDER TABLE ──
+function renderTable() {
+  const container = document.getElementById('tableContainer');
+  document.getElementById('countBadge').textContent = pieces.length + ' pcs';
+
+  if (pieces.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">🪵</div><p>Aucune pièce ajoutée.<br>Allez dans l'onglet Saisie pour commencer.</p></div>`;
+    return;
+  }
+
+  let sorted = [...pieces];
+  if (sortBy === 'ep') sorted.sort((a,b) => b.ep - a.ep);
+  if (sortBy === 'type') sorted.sort((a,b) => a.type.localeCompare(b.type));
+
+  const rows = sorted.map(p => {
+    const s = settings[p.type];
+    const isMassif = p.type === 'massif';
+    const typeLabel = isMassif ? 'Massif' : 'Panneau';
+
+    let finiLong, finiLarg, finiEp, brutLong, brutLarg, brutEp;
+    if (isMassif) {
+      brutLong = p.long + s.l;
+      brutLarg = p.larg + s.la;
+      brutEp   = p.ep   + s.ep;
+      finiLong = formatInches(p.long);
+      finiLarg = formatInches(p.larg);
+      finiEp   = formatInches(p.ep);
+      brutLong = formatInchesBrut(p.long + s.l);
+      brutLarg = formatInchesBrut(p.larg + s.la);
+      brutEp   = formatInchesBrut(p.ep   + s.ep);
+    } else {
+      brutLong = (p.long + s.l).toFixed(1) + ' mm';
+      brutLarg = (p.larg + s.la).toFixed(1) + ' mm';
+      brutEp   = (p.ep   + s.ep).toFixed(1) + ' mm';
+      finiLong = p.long + ' mm';
+      finiLarg = p.larg + ' mm';
+      finiEp   = p.ep   + ' mm';
+    }
+
+    return `<tr>
+      <td class="td-qty">${p.qty}</td>
+      <td class="td-name">
+        ${p.name}<br>
+        <span class="td-type ${p.type}">${typeLabel}</span>
+      </td>
+      <td class="td-fini">${finiLong}</td>
+      <td class="td-fini">${finiLarg}</td>
+      <td class="td-fini">${finiEp}</td>
+      <td class="td-brut">${brutLong}</td>
+      <td class="td-brut">${brutLarg}</td>
+      <td class="td-brut">${brutEp}</td>
+      <td><button class="td-del" onclick="deletePiece(${p.id})">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>QTÉ</th>
+          <th>DÉSIGNATION</th>
+          <th class="right">L. FINI</th>
+          <th class="right">l. FINI</th>
+          <th class="right">Ép. FINI</th>
+          <th class="right" style="color:var(--wood)">L. BRUT</th>
+          <th class="right" style="color:var(--wood)">l. BRUT</th>
+          <th class="right" style="color:var(--wood)">Ép. BRUT</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  // Update print header
+  document.getElementById('printHeader').innerHTML = `
+    <div style="font-family:'DM Sans',sans-serif">
+      <div style="font-size:11px;letter-spacing:3px;color:#888;margin-bottom:4px">LISTE DE DÉBIT BRUT</div>
+      <h2 style="font-size:24px;margin-bottom:4px">${project.nom || 'Sans titre'}</h2>
+      <div style="font-size:13px;color:#666">Date : ${project.date || '—'}</div>
+      ${project.desc ? `<div style="font-size:13px;color:#666;margin-top:4px">${project.desc}</div>` : ''}
+    </div>`;
+}
+
+// ── DELETE ──
+function deletePiece(id) {
+  pieces = pieces.filter(p => p.id !== id);
+  localStorage.setItem('debit_pieces', JSON.stringify(pieces));
+  renderTable();
+}
+
+// ── CLEAR ──
+function clearAll() {
+  if (confirm('Effacer toutes les pièces ?')) {
+    pieces = [];
+    localStorage.setItem('debit_pieces', JSON.stringify(pieces));
+    renderTable();
+  }
+}
+
+function exportCSV() {
+  if (pieces.length === 0) { alert('Aucune pièce à exporter.'); return; }
+  let csv = 'Qté,Désignation,Type,Long. Fini,Larg. Fini,Ép. Fini,Long. Brut,Larg. Brut,Ép. Brut\n';
+  pieces.forEach(p => {
+    const s = settings[p.type];
+    const isMassif = p.type === 'massif';
+    const typeLabel = isMassif ? 'Massif' : 'Panneau';
+    let fL, fl, fe, bL, bl, be;
+    if (isMassif) {
+      fL = formatInches(p.long); fl = formatInches(p.larg); fe = formatInches(p.ep);
+      bL = formatInchesBrut(p.long + s.l); bl = formatInchesBrut(p.larg + s.la); be = formatInchesBrut(p.ep + s.ep);
+    } else {
+      fL = p.long+'mm'; fl = p.larg+'mm'; fe = p.ep+'mm';
+      bL = (p.long+s.l).toFixed(1)+'mm'; bl = (p.larg+s.la).toFixed(1)+'mm'; be = (p.ep+s.ep).toFixed(1)+'mm';
+    }
+    csv += `${p.qty},"${p.name}",${typeLabel},${fL},${fl},${fe},${bL},${bl},${be}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `debit_${project.nom || 'projet'}_${project.date || 'date'}.csv`;
+  a.click();
+}
+
+// ── SETTINGS ──
+function saveSettings() {
+  function val(id) { const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? 0 : v; }
+  settings.massif.l   = val('sML');
+  settings.massif.la  = val('sMLa');
+  settings.massif.ep  = val('sMEp');
+  settings.panneau.l  = val('sPL');
+  settings.panneau.la = val('sPLa');
+  settings.panneau.ep = val('sPEp');
+  localStorage.setItem('debit_settings', JSON.stringify(settings));
+  updateSurepInfo();
+  renderTable();
+  const msg = document.getElementById('saveMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 2000);
+}
+
+// ── TABS ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['saisie','liste','reglages'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if (tab === 'liste') renderTable();
+}
+
+// ── GENERATE PDF ──
+function generatePDF() {
+  if (pieces.length === 0) { alert('Aucune pièce à exporter.'); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  // ── En-tête ──
+  doc.setFillColor(28, 26, 22);
+  doc.rect(0, 0, 297, 32, 'F');
+  doc.setTextColor(212, 168, 83);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('CRÉÉ PAR JP AVEC CLAUDE AI', 14, 10);
+  doc.setTextColor(245, 240, 232);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('LISTE DE DÉBIT BRUT', 14, 22);
+
+  // Ligne dorée — landscape width
+  doc.setDrawColor(212, 168, 83);
+  doc.setLineWidth(0.8);
+  doc.line(0, 32, 297, 32);
+
+  // ── Infos projet ──
+  doc.setTextColor(44, 40, 32);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text(project.nom || 'Sans titre', 14, 42);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(138, 127, 114);
+  if (project.date) doc.text('Date : ' + project.date, 14, 49);
+  if (project.desc) doc.text(project.desc, 14, 55);
+
+  // ── Tableau ──
+  let sorted = [...pieces];
+  if (sortBy === 'ep') sorted.sort((a,b) => b.ep - a.ep);
+  if (sortBy === 'type') sorted.sort((a,b) => a.type.localeCompare(b.type));
+
+  const rows = sorted.map(p => {
+    const s = settings[p.type];
+    const isMassif = p.type === 'massif';
+    const typeLabel = isMassif ? 'Massif' : 'Panneau';
+    let fL, fl, fe, bL, bl, be;
+    if (isMassif) {
+      fL = formatInches(p.long); fl = formatInches(p.larg); fe = formatInches(p.ep);
+      bL = formatInchesBrut(p.long + s.l); bl = formatInchesBrut(p.larg + s.la); be = formatInchesBrut(p.ep + s.ep);
+    } else {
+      fL = p.long+' mm'; fl = p.larg+' mm'; fe = p.ep+' mm';
+      bL = (p.long+s.l).toFixed(1)+' mm'; bl = (p.larg+s.la).toFixed(1)+' mm'; be = (p.ep+s.ep).toFixed(1)+' mm';
+    }
+    return [p.qty, p.name, typeLabel, fL, fl, fe, bL, bl, be];
+  });
+
+  doc.autoTable({
+    startY: project.desc ? 62 : project.date ? 56 : 48,
+    head: [['Qté', 'Désignation', 'Type', 'L. Fini', 'l. Fini', 'Ép. Fini', 'L. Brut', 'l. Brut', 'Ép. Brut']],
+    body: rows,
+    styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
+    headStyles: { fillColor: [28, 26, 22], textColor: [212, 168, 83], fontStyle: 'bold', fontSize: 8 },
+    alternateRowStyles: { fillColor: [245, 240, 232] },
+    columnStyles: {
+      0: { cellWidth: 12, halign: 'center' },
+      1: { cellWidth: 60 },
+      2: { cellWidth: 22 },
+      3: { cellWidth: 30, halign: 'right' },
+      4: { cellWidth: 30, halign: 'right' },
+      5: { cellWidth: 25, halign: 'right' },
+      6: { cellWidth: 32, halign: 'right', textColor: [139, 94, 60], fontStyle: 'bold' },
+      7: { cellWidth: 32, halign: 'right', textColor: [139, 94, 60], fontStyle: 'bold' },
+      8: { cellWidth: 26, halign: 'right', textColor: [139, 94, 60], fontStyle: 'bold' },
+    },
+    didDrawCell: (data) => {
+      // Color massif/panneau type badge
+      if (data.column.index === 2 && data.section === 'body') {
+        const isMassif = data.cell.raw === 'Massif';
+        data.cell.styles.textColor = isMassif ? [139, 94, 60] : [74, 124, 107];
+      }
+    }
+  });
+
+  // ── Pied de page ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(180, 170, 155);
+    doc.text(`Page ${i} / ${pageCount}`, 283, 200, { align: 'right' });
+    doc.text('Créé par JP avec Claude AI', 14, 200);
+  }
+
+  // ── Sauvegarde / partage ──
+  const filename = `debit_${(project.nom || 'projet').replace(/\s+/g,'_')}_${project.date || 'date'}.pdf`;
+
+  // Sur iOS, on ouvre dans un nouvel onglet pour permettre le partage natif
+  const pdfBlob = doc.output('blob');
+  const url = URL.createObjectURL(pdfBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+// Enter key to add
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement.closest('.add-form')) addPiece();
+});
+</script>
+</body>
+</html>

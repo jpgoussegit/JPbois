@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Conversion Pouces → Métrique</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --card: #222;
+    --accent: #f5c518;
+    --accent2: #e8853d;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: #333;
+    --highlight: #2a2a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+  }
+
+  /* Header */
+  header {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(245,197,24,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--text);
+  }
+  h1 span { color: var(--accent); }
+
+  /* Tabs */
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 14px 0;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+  .tab.active {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* Panels */
+  .panel { display: none; padding: 20px; }
+  .panel.active { display: block; }
+
+  /* Search */
+  .search-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus-within { border-color: var(--accent); }
+  .search-icon { color: var(--muted); font-size: 16px; }
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    width: 100%;
+  }
+  .search-box input::placeholder { color: var(--muted); font-size: 13px; }
+
+  /* Result card */
+  .result-card {
+    background: var(--highlight);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: none;
+    animation: pop 0.2s ease;
+  }
+  .result-card.show { display: block; }
+  @keyframes pop {
+    from { transform: scale(0.97); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .result-fraction {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .result-values {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .result-val {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .result-val .unit {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .result-val .value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .result-val .value small { font-size: 13px; color: var(--muted); }
+
+  /* Table list */
+  .section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .conv-list { display: flex; flex-direction: column; gap: 2px; }
+  .conv-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 1fr;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .conv-row:hover, .conv-row:active { background: var(--highlight); }
+  .conv-row.highlighted { background: var(--highlight); border-left: 3px solid var(--accent); }
+  .conv-row .frac {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .conv-row .dec {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .conv-row .mm {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--accent2);
+    text-align: right;
+  }
+  .conv-header {
+    display: grid;
+    grid-template-columns: 90px 1fr 1fr;
+    padding: 6px 12px;
+    margin-bottom: 4px;
+  }
+  .conv-header span {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+  }
+  .conv-header span:nth-child(2) { text-align: center; }
+  .conv-header span:nth-child(3) { text-align: right; }
+
+  /* Calculator tab */
+  .calc-section { margin-bottom: 24px; }
+  .calc-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .input-row:focus-within { border-color: var(--accent); }
+  .input-row input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    width: 100%;
+  }
+  .input-row .suffix {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .arrow-divider {
+    text-align: center;
+    font-size: 24px;
+    color: var(--accent);
+    margin: 8px 0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .calc-result {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .calc-result .res-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .calc-result .res-unit {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .nearest-match {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--card);
+    border-radius: 8px;
+    display: none;
+  }
+  .nearest-match.show { display: block; }
+  .nearest-match .nm-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .nearest-match .nm-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .nearest-match .nm-val span { color: var(--accent); }
+
+  /* Info tab */
+  .info-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 14px;
+    border-left: 3px solid var(--accent);
+  }
+  .info-card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .info-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .formula {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--accent2);
+    margin-top: 10px;
+  }
+
+  /* Quick picks */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .quick-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .quick-btn:hover, .quick-btn:active {
+    background: var(--highlight);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .no-result {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    display: none;
+  }
+  .no-result.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Créé par JP avec Claude AI</div>
+  <h1>POUCES<br><span>→ MÉTRIQUE</span></h1>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('search')">🔍 CHERCHER</button>
+  <button class="tab" onclick="switchTab('calc')">⇄ CALCULER</button>
+  <button class="tab" onclick="switchTab('table')">📋 TABLEAU</button>
+</div>
+
+<!-- SEARCH TAB -->
+<div class="panel active" id="panel-search">
+  <div class="search-box">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder='ex: 3/8, 1/4, 7/16...' oninput="doSearch(this.value)" autocomplete="off">
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-fraction" id="resFraction"></div>
+    <div class="result-values">
+      <div class="result-val">
+        <div class="unit">Décimal</div>
+        <div class="value" id="resDecimal"></div>
+      </div>
+      <div class="result-val">
+        <div class="unit">Millimètres</div>
+        <div class="value" id="resMM"><small>mm</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="no-result" id="noResult">Aucun résultat trouvé</div>
+
+  <div class="section-title">Fractions courantes</div>
+  <div class="quick-grid">
+    <div class="quick-btn" onclick="quickPick('1/8')">1/8"</div>
+    <div class="quick-btn" onclick="quickPick('1/4')">1/4"</div>
+    <div class="quick-btn" onclick="quickPick('3/8')">3/8"</div>
+    <div class="quick-btn" onclick="quickPick('1/2')">1/2"</div>
+    <div class="quick-btn" onclick="quickPick('5/8')">5/8"</div>
+    <div class="quick-btn" onclick="quickPick('3/4')">3/4"</div>
+    <div class="quick-btn" onclick="quickPick('7/8')">7/8"</div>
+    <div class="quick-btn" onclick="quickPick('1')">1"</div>
+  </div>
+</div>
+
+<!-- CALC TAB -->
+<div class="panel" id="panel-calc">
+  <div class="calc-section">
+    <div class="calc-label">Pouces → Millimètres</div>
+    <div class="input-row">
+      <input type="number" id="inchInput" placeholder="0.00" step="any" oninput="calcFromInch(this.value)">
+      <span class="suffix">pouces (″)</span>
+    </div>
+    <div class="arrow-divider">↓</div>
+    <div class="calc-result">
+      <div class="res-value" id="mmResult">—</div>
+      <div class="res-unit">mm</div>
+    </div>
+    <div class="nearest-match" id="nearestMatch">
+      <div class="nm-label">Fraction la plus proche</div>
+      <div class="nm-val" id="nearestVal">—</div>
+    </div>
+  </div>
+
+  <div class="calc-section">
+    <div class="calc-label">Millimètres → Pouces</div>
+    <div class="input-row">
+      <input type="number" id="mmInput" placeholder="0.00" step="any" oninput="calcFromMM(this.value)">
+      <span class="suffix">mm</span>
+    </div>
+    <div class="arrow-divider">↓</div>
+    <div class="calc-result">
+      <div class="res-value" id="inchResult">—</div>
+      <div class="res-unit">pouces</div>
+    </div>
+    <div class="nearest-match" id="nearestMatchMM">
+      <div class="nm-label">Fraction la plus proche</div>
+      <div class="nm-val" id="nearestValMM">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE TAB -->
+<div class="panel" id="panel-table">
+  <div class="conv-header">
+    <span>Pouces</span>
+    <span>Décimal</span>
+    <span>mm</span>
+  </div>
+  <div class="conv-list" id="convList"></div>
+</div>
+
+<script>
+const data = [
+  ["1/64\"",0.0156,0.397],["1/32\"",0.0312,0.794],["3/64\"",0.0469,1.191],["1/16\"",0.0625,1.588],
+  ["5/64\"",0.0781,1.984],["3/32\"",0.0938,2.381],["7/64\"",0.1094,2.778],["1/8\"",0.1250,3.175],
+  ["9/64\"",0.1406,3.572],["5/32\"",0.1562,3.969],["11/64\"",0.1719,4.366],["3/16\"",0.1875,4.762],
+  ["13/64\"",0.2031,5.159],["7/32\"",0.2188,5.556],["15/64\"",0.2344,5.953],["1/4\"",0.250,6.350],
+  ["17/64\"",0.2656,6.747],["9/32\"",0.2812,7.144],["19/64\"",0.2969,7.541],["5/16\"",0.3125,7.938],
+  ["21/64\"",0.3281,8.334],["11/32\"",0.3438,8.731],["23/64\"",0.3594,9.128],["3/8\"",0.3750,9.525],
+  ["25/64\"",0.3906,9.922],["13/32\"",0.4062,10.319],["27/64\"",0.4219,10.716],["7/16\"",0.4375,11.112],
+  ["29/64\"",0.4531,11.509],["15/32\"",0.4688,11.906],["31/64\"",0.4844,12.303],["1/2\"",0.500,12.700],
+  ["33/64\"",0.5156,13.097],["17/32\"",0.5312,13.494],["35/64\"",0.5469,13.891],["9/16\"",0.5625,14.288],
+  ["37/64\"",0.5781,14.684],["19/32\"",0.5938,15.081],["39/64\"",0.6094,15.478],["5/8\"",0.6250,15.875],
+  ["41/64\"",0.6406,16.272],["21/32\"",0.6562,16.669],["43/64\"",0.6719,17.066],["11/16\"",0.6875,17.462],
+  ["45/64\"",0.7031,17.859],["23/32\"",0.7188,18.256],["47/64\"",0.7344,18.653],["3/4\"",0.7500,19.050],
+  ["49/64\"",0.7656,19.447],["25/32\"",0.7812,19.844],["51/64\"",0.7969,20.241],["13/16\"",0.8125,20.638],
+  ["53/64\"",0.8281,21.034],["27/32\"",0.8438,21.431],["55/64\"",0.8594,21.828],["7/8\"",0.8750,22.225],
+  ["57/64\"",0.8906,22.622],["29/32\"",0.9062,23.019],["59/64\"",0.9219,23.416],["15/16\"",0.9375,23.812],
+  ["61/64\"",0.9531,24.209],["31/32\"",0.9688,24.606],["63/64\"",0.9844,25.003],["1\"",1.0000,25.400]
+];
+
+// Build table
+const convList = document.getElementById('convList');
+data.forEach(([frac, dec, mm]) => {
+  const row = document.createElement('div');
+  row.className = 'conv-row';
+  row.innerHTML = `<span class="frac">${frac}</span><span class="dec">${dec.toFixed(4)}</span><span class="mm">${mm.toFixed(3)} mm</span>`;
+  row.onclick = () => {
+    switchTab('search');
+    showResult(frac, dec, mm);
+    document.getElementById('searchInput').value = frac.replace('"','');
+  };
+  convList.appendChild(row);
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['search','calc','table'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+function normalize(str) {
+  return str.trim().replace(/["""]/g,'').toLowerCase();
+}
+
+function doSearch(val) {
+  const q = normalize(val);
+  const card = document.getElementById('resultCard');
+  const noRes = document.getElementById('noResult');
+  if (!q) {
+    card.classList.remove('show');
+    noRes.classList.remove('show');
+    return;
+  }
+  // Try exact match first (with or without ")
+  let found = data.find(([frac]) => normalize(frac) === q || normalize(frac) === q + '"');
+  // If no exact match, try starts-with
+  if (!found) found = data.find(([frac]) => normalize(frac).startsWith(q + '/') || normalize(frac).startsWith(q + '"'));
+  // Fallback: contains
+  if (!found) found = data.find(([frac]) => normalize(frac).includes(q));
+  if (found) {
+    showResult(...found);
+    noRes.classList.remove('show');
+  } else {
+    card.classList.remove('show');
+    noRes.classList.add('show');
+  }
+}
+
+function showResult(frac, dec, mm) {
+  document.getElementById('resFraction').textContent = frac;
+  document.getElementById('resDecimal').textContent = dec.toFixed(4);
+  document.getElementById('resMM').innerHTML = `${mm.toFixed(3)}<small> mm</small>`;
+  document.getElementById('resultCard').classList.add('show');
+}
+
+function quickPick(frac) {
+  document.getElementById('searchInput').value = frac;
+  doSearch(frac);
+}
+
+function findNearest(inches) {
+  let best = data[0], bestDiff = Infinity;
+  data.forEach(([frac, dec, mm]) => {
+    const diff = Math.abs(dec - inches);
+    if (diff < bestDiff) { bestDiff = diff; best = [frac, dec, mm]; }
+  });
+  return best;
+}
+
+function calcFromInch(val) {
+  const v = parseFloat(val);
+  const mmRes = document.getElementById('mmResult');
+  const nm = document.getElementById('nearestMatch');
+  const nmVal = document.getElementById('nearestVal');
+  if (isNaN(v) || val === '') {
+    mmRes.textContent = '—';
+    nm.classList.remove('show');
+    return;
+  }
+  const mm = v * 25.4;
+  mmRes.textContent = mm.toFixed(3) + ' mm';
+  const [frac, dec, fmm] = findNearest(v);
+  nmVal.innerHTML = `<span>${frac}</span> = ${fmm.toFixed(3)} mm`;
+  nm.classList.add('show');
+}
+
+function calcFromMM(val) {
+  const v = parseFloat(val);
+  const inchRes = document.getElementById('inchResult');
+  const nm = document.getElementById('nearestMatchMM');
+  const nmVal = document.getElementById('nearestValMM');
+  if (isNaN(v) || val === '') {
+    inchRes.textContent = '—';
+    nm.classList.remove('show');
+    return;
+  }
+  const inches = v / 25.4;
+  inchRes.textContent = inches.toFixed(4) + '″';
+  const [frac, dec, fmm] = findNearest(inches);
+  nmVal.innerHTML = `<span>${frac}</span> = ${fmm.toFixed(3)} mm`;
+  nm.classList.add('show');
+}
+</script>
+</body>
+</html>
