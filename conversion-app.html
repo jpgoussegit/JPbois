@@ -433,7 +433,7 @@
   <div class="calc-section">
     <div class="calc-label">Pouces → Millimètres</div>
     <div class="input-row">
-      <input type="number" id="inchInput" placeholder="0.00" step="any" oninput="calcFromInch(this.value)">
+      <input type="text" id="inchInput" placeholder="ex: 3/4 ou 1 1/2" oninput="calcFromInch(this.value)">
       <span class="suffix">pouces (″)</span>
     </div>
     <div class="arrow-divider">↓</div>
@@ -566,8 +566,21 @@ function findNearest(inches) {
   return best;
 }
 
+function parseFraction(val) {
+  val = val.trim();
+  if (!val) return NaN;
+  if (/^[\d.]+$/.test(val)) return parseFloat(val);
+  if (/^\d+\/\d+$/.test(val)) {
+    const [n, d] = val.split('/');
+    return parseInt(n) / parseInt(d);
+  }
+  const mixed = val.match(/^(\d+)[\s\-]+(\d+)\/(\d+)$/);
+  if (mixed) return parseInt(mixed[1]) + parseInt(mixed[2]) / parseInt(mixed[3]);
+  return NaN;
+}
+
 function calcFromInch(val) {
-  const v = parseFloat(val);
+  const v = parseFraction(val);
   const mmRes = document.getElementById('mmResult');
   const nm = document.getElementById('nearestMatch');
   const nmVal = document.getElementById('nearestVal');
@@ -583,6 +596,21 @@ function calcFromInch(val) {
   nm.classList.add('show');
 }
 
+function toFraction(inches) {
+  const whole = Math.floor(inches);
+  const frac = inches - whole;
+  if (frac < 0.001) return whole > 0 ? whole + '″' : '0″';
+  // Find closest 64th and simplify
+  const den = 64;
+  const num = Math.round(frac * den);
+  if (num === 0) return whole + '″';
+  if (num === den) return (whole + 1) + '″';
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  const g = gcd(num, den);
+  const sNum = num / g, sDen = den / g;
+  return whole > 0 ? `${whole} ${sNum}/${sDen}″` : `${sNum}/${sDen}″`;
+}
+
 function calcFromMM(val) {
   const v = parseFloat(val);
   const inchRes = document.getElementById('inchResult');
@@ -594,7 +622,7 @@ function calcFromMM(val) {
     return;
   }
   const inches = v / 25.4;
-  inchRes.textContent = inches.toFixed(4) + '″';
+  inchRes.textContent = toFraction(inches);
   const [frac, dec, fmm] = findNearest(inches);
   nmVal.innerHTML = `<span>${frac}</span> = ${fmm.toFixed(3)} mm`;
   nm.classList.add('show');
