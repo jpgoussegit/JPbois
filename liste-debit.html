@@ -375,7 +375,124 @@ tr:hover td { background: var(--bg); }
 .color-dot.wood { background: var(--wood); }
 .color-dot.panel { background: var(--panel-color); }
 
-/* ── PRINT ── */
+/* ── PROJECTS ── */
+.proj-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.proj-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.proj-item:hover { border-color: var(--wood); background: #fffaf4; }
+.proj-item.active-proj { border-color: var(--accent); background: #fffaf4; }
+.proj-icon { font-size: 22px; flex-shrink: 0; }
+.proj-info { flex: 1; min-width: 0; }
+.proj-name { font-weight: 600; font-size: 15px; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj-meta { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.proj-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.proj-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.proj-btn.load { border-color: var(--wood); color: var(--wood); }
+.proj-btn.load:hover { background: var(--wood); color: #fff; }
+.proj-btn.del:hover { border-color: var(--danger); color: var(--danger); }
+.new-proj-bar {
+  display: flex; gap: 10px; margin-bottom: 20px;
+}
+.new-proj-bar input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.new-proj-bar input:focus { border-color: var(--wood); }
+.btn-save-proj {
+  background: var(--dark);
+  color: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-save-proj:hover { background: var(--wood); }
+.empty-proj {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.empty-proj .icon { font-size: 36px; margin-bottom: 10px; }
+.current-proj-banner {
+  background: #fffaf0;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--wood);
+  font-family: 'DM Mono', monospace;
+  display: none;
+}
+.current-proj-banner.show { display: block; }
+
+/* ── MODAL CONFIRM ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.modal p { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button {
+  flex: 1; padding: 11px; border-radius: 8px;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  cursor: pointer; border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+.modal-btns .btn-confirm { background: var(--danger); color: #fff; border-color: var(--danger); }
+.modal-btns .btn-cancel { background: var(--bg); color: var(--muted); }
+
+@media print {
+  .modal-overlay { display: none !important; }
+}
 @media print {
   body { background: white; }
   .tabs, .add-form, .action-bar, .surep-bar, .surep-info, .td-del, header .header-top button { display: none !important; }
@@ -414,6 +531,7 @@ tr:hover td { background: var(--bg); }
 <div class="tabs">
   <button class="tab active" onclick="switchTab('saisie')">✏️ SAISIE</button>
   <button class="tab" onclick="switchTab('liste')">📋 LISTE BRUTE</button>
+  <button class="tab" onclick="switchTab('projets')">📁 PROJETS</button>
   <button class="tab" onclick="switchTab('reglages')">⚙️ RÉGLAGES</button>
 </div>
 
@@ -512,8 +630,18 @@ tr:hover td { background: var(--bg); }
   <div class="action-bar">
     <button class="btn-action primary" onclick="generatePDF()">📄 GÉNÉRER PDF</button>
     <button class="btn-action" onclick="exportCSV()">📥 EXPORT CSV</button>
+    <button class="btn-action" onclick="promptSaveProject()" style="color:var(--wood);border-color:var(--wood)">💾 SAUVEGARDER</button>
     <button class="btn-action" onclick="clearAll()" style="color:#c0392b">🗑️ TOUT EFFACER</button>
   </div>
+
+</div>
+
+<!-- ═══ PROJETS ═══ -->
+<div class="panel" id="panel-projets">
+
+  <div class="current-proj-banner" id="currentProjBanner"></div>
+  <div class="card-title" style="margin-bottom:10px;">Projets sauvegardés</div>
+  <div class="proj-list" id="projList"></div>
 
 </div>
 
@@ -853,11 +981,11 @@ function deletePiece(id) {
 
 // ── CLEAR ──
 function clearAll() {
-  if (confirm('Effacer toutes les pièces ?')) {
+  showModal('Tout effacer ?', 'Toutes les pièces du projet actuel seront supprimées.', () => {
     pieces = [];
     localStorage.setItem('debit_pieces', JSON.stringify(pieces));
     renderTable();
-  }
+  });
 }
 
 function exportCSV() {
@@ -906,10 +1034,137 @@ function saveSettings() {
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const tabs = ['saisie','liste','reglages'];
+  const tabs = ['saisie','liste','projets','reglages'];
   document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
   document.getElementById('panel-'+tab).classList.add('active');
   if (tab === 'liste') renderTable();
+  if (tab === 'projets') renderProjects();
+}
+
+// ── MODAL ──
+let modalCallback = null;
+function showModal(title, msg, callback) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg;
+  document.getElementById('modalConfirmBtn').onclick = () => { closeModal(); callback(); };
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// ── PROJECT MANAGEMENT ──
+function getAllProjects() {
+  return JSON.parse(localStorage.getItem('debit_all_projects') || '[]');
+}
+function saveAllProjects(projects) {
+  localStorage.setItem('debit_all_projects', JSON.stringify(projects));
+}
+
+function promptSaveProject() {
+  if (pieces.length === 0) { alert('Aucune pièce à sauvegarder.'); return; }
+  const name = project.nom ? project.nom.trim() : '';
+  const suggested = name || 'Mon projet';
+  const input = prompt('Nom du projet :', suggested);
+  if (input === null) return; // annulé
+  const finalName = input.trim() || suggested;
+  saveCurrentProject(finalName);
+}
+
+function saveCurrentProject(name) {
+  const projects = getAllProjects();
+  const existing = projects.findIndex(p => p.name === name);
+
+  const doSave = () => {
+    const entry = {
+      name,
+      date: project.date || new Date().toISOString().split('T')[0],
+      desc: project.desc || '',
+      pieces: [...pieces],
+      savedAt: new Date().toLocaleString('fr-CA')
+    };
+    if (existing >= 0) {
+      projects[existing] = entry;
+    } else {
+      projects.unshift(entry);
+    }
+    saveAllProjects(projects);
+    updateCurrentBanner(name);
+    const btn = document.querySelector('.btn-action[onclick="promptSaveProject()"]');
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '✓ SAUVEGARDÉ';
+      btn.style.background = 'var(--panel-color)';
+      btn.style.color = '#fff';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);
+    }
+  };
+
+  if (existing >= 0) {
+    showModal('Écraser le projet ?', `"${name}" existe déjà. Voulez-vous le remplacer ?`, doSave);
+  } else {
+    doSave();
+  }
+}
+
+function loadProject(name) {
+  const doLoad = () => {
+    const projects = getAllProjects();
+    const entry = projects.find(p => p.name === name);
+    if (!entry) return;
+    pieces = entry.pieces || [];
+    project = { nom: entry.name, date: entry.date, desc: entry.desc || '' };
+    localStorage.setItem('debit_pieces', JSON.stringify(pieces));
+    localStorage.setItem('debit_project', JSON.stringify(project));
+    document.getElementById('projNom').value = project.nom;
+    document.getElementById('projDate').value = project.date || '';
+    document.getElementById('projDesc').value = project.desc || '';
+    updateCurrentBanner(name);
+    switchTab('saisie');
+  };
+  if (pieces.length > 0) {
+    showModal('Charger ce projet ?', `Le projet actuel non sauvegardé sera remplacé par "${name}".`, doLoad);
+  } else {
+    doLoad();
+  }
+}
+
+function deleteProject(name) {
+  showModal('Supprimer ce projet ?', `"${name}" sera définitivement supprimé.`, () => {
+    const projects = getAllProjects().filter(p => p.name !== name);
+    saveAllProjects(projects);
+    renderProjects();
+  });
+}
+
+function updateCurrentBanner(name) {
+  const banner = document.getElementById('currentProjBanner');
+  banner.textContent = `📁 Projet actif : ${name}`;
+  banner.classList.add('show');
+}
+
+function renderProjects() {
+  const list = document.getElementById('projList');
+  const projects = getAllProjects();
+
+  if (projects.length === 0) {
+    list.innerHTML = `<div class="empty-proj"><div class="icon">📂</div><p>Aucun projet sauvegardé.<br>Saisissez vos pièces et sauvegardez !</p></div>`;
+    return;
+  }
+
+  list.innerHTML = projects.map(p => `
+    <div class="proj-item">
+      <div class="proj-icon">🪵</div>
+      <div class="proj-info">
+        <div class="proj-name">${p.name}</div>
+        <div class="proj-meta">${p.date || '—'} · ${p.pieces ? p.pieces.length : 0} pièce${p.pieces?.length !== 1 ? 's' : ''} · ${p.savedAt || ''}</div>
+      </div>
+      <div class="proj-actions">
+        <button class="proj-btn load" onclick="loadProject('${p.name.replace(/'/g,"\\'")}')">CHARGER</button>
+        <button class="proj-btn del" onclick="deleteProject('${p.name.replace(/'/g,"\\'")}')">✕</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 // ── GENERATE PDF ──
@@ -1025,5 +1280,17 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.activeElement.closest('.add-form')) addPiece();
 });
 </script>
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Confirmer</h3>
+    <p id="modalMsg"></p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">ANNULER</button>
+      <button class="btn-confirm" id="modalConfirmBtn">CONFIRMER</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
